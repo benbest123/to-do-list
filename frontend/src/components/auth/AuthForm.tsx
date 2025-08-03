@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 import { API_URL } from "../../utils/constants";
 
 export default function AuthForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,8 +24,7 @@ export default function AuthForm() {
       const authResponse = await response.json();
 
       if (response.ok) {
-        // Success! User is either logged in or registered
-        localStorage.setItem("token", authResponse.token);
+        login(authResponse.user.username, authResponse.token);
         console.log(authResponse.message);
         navigate("/todos");
       } else {
