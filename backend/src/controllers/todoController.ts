@@ -1,10 +1,28 @@
 import { Request, Response } from "express";
 import db from "../database";
 import { Todo } from "../types/todo";
+import { TodoRow } from "../types/todorow";
+import { getUserFromToken } from "../utils/authCheck";
+import { dbToTodo } from "../utils/database";
 
 export const fetchTodos = (req: Request, res: Response) => {
   try {
-    const todos = db.prepare("SELECT * FROM todos").all();
+    const userId = getUserFromToken(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    const todoRows = db.prepare("SELECT * FROM todos WHERE user_id = ?").all(userId) as TodoRow[];
+    const todos: Todo[] = todoRows.map(dbToTodo);
+    res.json(todos);
+  } catch (err) {
+    res.status(500).json({ error: "failed to fetch todos" });
+  }
+};
+
+export const fetchAllTodos = (req: Request, res: Response) => {
+  try {
+    const todoRows = db.prepare("SELECT * FROM todos").all() as TodoRow[];
+    const todos: Todo[] = todoRows.map(dbToTodo);
     res.json(todos);
   } catch (err) {
     res.status(500).json({ error: "failed to fetch todos" });
@@ -13,13 +31,18 @@ export const fetchTodos = (req: Request, res: Response) => {
 
 export const addTodo = (req: Request, res: Response) => {
   try {
+    const userId = getUserFromToken(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
     const { title } = req.body;
 
     if (!title) {
       return res.status(400).json("cannot submit an empty todo");
     }
 
-    const newTodo = db.prepare("INSERT INTO todos (title) values (?) RETURNING *").get(title);
+    const newTodoRow = db.prepare("INSERT INTO todos (title, user_id) values (?, ?) RETURNING *").get(title, userId) as TodoRow;
+    const newTodo = dbToTodo(newTodoRow);
 
     res.status(201).json(newTodo);
   } catch (err) {
@@ -35,7 +58,8 @@ export const toggleComplete = (req: Request, res: Response) => {
       // this is to prevent possible sql injection
       return res.status(400).json({ error: "Invalid todo ID" });
     }
-    const result = db.prepare("UPDATE todos SET completed = NOT completed WHERE id = ? RETURNING *").get(id) as Todo;
+    const resultRow = db.prepare("UPDATE todos SET completed = NOT completed WHERE id = ? RETURNING *").get(id) as TodoRow;
+    const result = dbToTodo(resultRow);
 
     if (!result) {
       return res.status(404).json({ error: "todo not found" });

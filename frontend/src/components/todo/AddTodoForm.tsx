@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { API_URL } from "../utils/constants";
 
 interface AddTodoFormProps {
   onSubmit: (title: string) => void;
@@ -13,24 +12,8 @@ export default function AddTodoForm({ onSubmit }: AddTodoFormProps) {
 
     if (!input.trim()) return;
 
-    try {
-      const response = await fetch(`${API_URL}/todos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add todo");
-      }
-
-      const newTodo = await response.json();
-
-      onSubmit(newTodo.title);
-      setInput("");
-    } catch (err) {
-      console.error("error adding todo:", err);
-    }
+    await onSubmit(input);
+    setInput("");
   }
 
   return (

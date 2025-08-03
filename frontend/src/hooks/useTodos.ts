@@ -10,7 +10,15 @@ export default function useTodos() {
   }, []);
 
   async function fetchTodos() {
-    const response = await fetch(`${API_URL}/todos`, { method: "GET" });
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/todos`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     if (!response.ok) {
       throw new Error("failed to fetch todos");
     }
@@ -18,11 +26,35 @@ export default function useTodos() {
     setTodos(data);
   }
 
+  async function addTodo(title: string) {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add todo");
+      }
+
+      const newTodo = await response.json();
+      setTodos((prev) => [...prev, newTodo]);
+    } catch (err) {
+      console.error("Error adding todo:", err);
+      await fetchTodos();
+    }
+  }
+
   async function setTodoCompleted(id: number, checked: boolean) {
     try {
       setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed: checked } : todo)));
-
-      const response = await fetch(`${API_URL}/todos/${id}/toggle`, { method: "PATCH" });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/${id}/toggle`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to update todo");
@@ -39,13 +71,13 @@ export default function useTodos() {
 
   async function deleteTodo(id: number) {
     try {
-      const response = await fetch(`${API_URL}/todos/${id}`, { method: "DELETE" });
+      setTodos((prev) => prev.filter((todo: Todo) => todo.id !== id));
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to delete todo");
       }
-
-      setTodos((prev) => prev.filter((todo: Todo) => todo.id !== id));
     } catch (err) {
       console.error("Delete error:", err);
       await fetchTodos();
@@ -56,7 +88,8 @@ export default function useTodos() {
     try {
       //optimistic update
       setTodos((prev) => prev.filter((todo: Todo) => !todo.completed));
-      const response = await fetch(`${API_URL}/todos/delete-completed`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/delete-completed`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to delete todos");
@@ -74,6 +107,7 @@ export default function useTodos() {
   return {
     todos,
     fetchTodos,
+    addTodo,
     setTodoCompleted,
     deleteAllCompletedTodos,
     deleteTodo,
