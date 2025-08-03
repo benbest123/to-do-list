@@ -1,5 +1,5 @@
-import { TodoRow } from "../types/database";
 import { Todo } from "../types/todo";
+import { TodoRow } from "../types/todorow";
 
 // frontend handles completed as a bool, sqlite db stores it as an int
 // helper functions to handle the conversion here

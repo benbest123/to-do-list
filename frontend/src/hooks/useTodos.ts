@@ -10,7 +10,15 @@ export default function useTodos() {
   }, []);
 
   async function fetchTodos() {
-    const response = await fetch(`${API_URL}/todos`, { method: "GET" });
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/todos`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     if (!response.ok) {
       throw new Error("failed to fetch todos");
     }
