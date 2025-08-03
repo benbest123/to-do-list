@@ -26,6 +26,30 @@ export default function useTodos() {
     setTodos(data);
   }
 
+  async function addTodo(title: string) {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add todo");
+      }
+
+      const newTodo = await response.json();
+      setTodos((prev) => [...prev, newTodo]);
+    } catch (err) {
+      console.error("Error adding todo:", err);
+      await fetchTodos();
+    }
+  }
+
   async function setTodoCompleted(id: number, checked: boolean) {
     try {
       setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed: checked } : todo)));
@@ -83,6 +107,7 @@ export default function useTodos() {
   return {
     todos,
     fetchTodos,
+    addTodo,
     setTodoCompleted,
     deleteAllCompletedTodos,
     deleteTodo,
