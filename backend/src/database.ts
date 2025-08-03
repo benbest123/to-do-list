@@ -12,4 +12,12 @@ db.exec(`
         completed INTEGER DEFAULT FALSE
     )`);
 
+// initialize users table
+db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password_hashed TEXT NOT NULL
+    )`);
+
 export default db;
