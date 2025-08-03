@@ -29,8 +29,8 @@ export default function useTodos() {
   async function setTodoCompleted(id: number, checked: boolean) {
     try {
       setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed: checked } : todo)));
-
-      const response = await fetch(`${API_URL}/todos/${id}/toggle`, { method: "PATCH" });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/${id}/toggle`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to update todo");
@@ -47,13 +47,13 @@ export default function useTodos() {
 
   async function deleteTodo(id: number) {
     try {
-      const response = await fetch(`${API_URL}/todos/${id}`, { method: "DELETE" });
+      setTodos((prev) => prev.filter((todo: Todo) => todo.id !== id));
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to delete todo");
       }
-
-      setTodos((prev) => prev.filter((todo: Todo) => todo.id !== id));
     } catch (err) {
       console.error("Delete error:", err);
       await fetchTodos();
@@ -64,7 +64,8 @@ export default function useTodos() {
     try {
       //optimistic update
       setTodos((prev) => prev.filter((todo: Todo) => !todo.completed));
-      const response = await fetch(`${API_URL}/todos/delete-completed`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_URL}/todos/delete-completed`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 
       if (!response.ok) {
         throw new Error("Failed to delete todos");

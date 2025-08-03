@@ -14,9 +14,10 @@ export default function AddTodoForm({ onSubmit }: AddTodoFormProps) {
     if (!input.trim()) return;
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_URL}/todos`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ title: input }),
       });
 

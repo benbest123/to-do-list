@@ -8,11 +8,10 @@ import { dbToTodo } from "../utils/database";
 export const fetchTodos = (req: Request, res: Response) => {
   try {
     const userId = getUserFromToken(req);
-    if (!userId)
-      if (!userId) {
-        return res.status(401).json({ error: "Authentication required" });
-      }
-    const todoRows = db.prepare("SELECT * FROM todos").all(userId) as TodoRow[];
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+    const todoRows = db.prepare("SELECT * FROM todos WHERE user_id = ?").all(userId) as TodoRow[];
     const todos: Todo[] = todoRows.map(dbToTodo);
     res.json(todos);
   } catch (err) {
