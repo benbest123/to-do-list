@@ -1,16 +1,19 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 import Auth from "./pages/Auth";
-import Todo from "./pages/todo";
+import Todo from "./pages/Todo";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Auth />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/todos" element={<Todo />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/todos" element={<Todo />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

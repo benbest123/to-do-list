@@ -22,7 +22,7 @@ export const authentication = (req: Request, res: Response) => {
       return res.status(400).json({ error: "username and password are required" });
     }
 
-    // generate JWT token
+    // check JWT token
     if (!process.env.JWT_SECRET) {
       console.error("JWT_SECRET not configured");
       return res.status(500).json({ error: "Server configuration error" });
