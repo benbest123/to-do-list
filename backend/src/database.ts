@@ -5,6 +5,7 @@ const dbPath = path.resolve(__dirname, "../database.sqlite");
 const db = new Database(dbPath);
 
 // db.exec(`DROP TABLE IF EXISTS todos`);
+// db.exec(`DROP TABLE IF EXISTS users`);
 
 // initialize todo table
 db.exec(`

@@ -6,8 +6,9 @@ import { User } from "../types/user";
 
 export const fetchUsers = (req: Request, res: Response) => {
   try {
-    const users = db.prepare("SELECT * FROM users").all() as Omit<User, "password_hash">[]; // dont want to return password hash
-    res.json(users);
+    const users = db.prepare("SELECT * FROM users").all() as User[];
+    const usersNoPassword = users.map(({ password_hash, ...rest }) => rest) as Omit<User, "password_hash">[]; // dont want to return password hash
+    res.json(usersNoPassword);
   } catch (err) {
     res.status(500).json({ error: "failed to fetch users" });
   }
