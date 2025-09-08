@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+@layer base {
+  @font-face {
+    font-family: "W95FA";
+
+    src: url("./fonts/W95FA/W95FA.woff2") format("woff2"), url("./fonts/W95FA/W95FA.woff") format("woff");
+
+    font-weight: 400;
+
+    font-style: normal;
+
+    font-display: swap;
+  }
+
+  body {
+    font-family: "W95FA", ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .shadow-w95Button {
+    box-shadow: inset -1px -1px 0 0 #000000, inset 1px 1px 0 0 #ffffff, inset -2px -2px 0 0 #7f7f7f, inset 2px 2px 0 0 #dfdfdf;
+  }
+
+  .shadow-w95Button:hover {
+    box-shadow: inset -1px -1px 0 0 #000000, inset 1px 1px 0 0 #ffffff, inset -2px -2px 0 0 #7f7f7f, inset 2px 2px 0 0 #dfdfdf, 0 0 0 1px #000000;
+  }
+
+  .shadow-w95Button:active {
+    box-shadow: inset -1px -1px 0 0 #ffffff, inset 1px 1px 0 0 #000000, inset -2px -2px 0 0 #c4c4c4, inset 2px 2px 0 0 #808080;
+  }
+
+  .shadow-w95Container {
+    box-shadow: inset -1px -1px 0 0 #000000, inset 1px 1px 0 0 #ffffff, inset -2px -2px 0 0 #7f7f7f, inset 2px 2px 0 0 #dfdfdf;
+  }
+
+  .shadow-w95InnerContainer {
+    box-shadow: inset -1px -1px 0 0 #ffffff, inset 1px 1px 0 0 #808080, inset -2px -2px 0 0 #c1c1c1, inset 2px 2px 0 0 #000000;
+  }
+
+  .shadow-w95Input {
+    box-shadow: inset -1px -1px 0 0 #ffffff, inset 1px 1px 0 0 #808080, inset -2px -2px 0 0 #c1c1c1, inset 2px 2px 0 0 #000000;
+  }
+
+  .font-w95 {
+    font-family: "W95FA", ui-sans-serif, system-ui, sans-serif;
+  }
+}
