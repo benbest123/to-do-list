@@ -15,11 +15,15 @@ function Todo() {
   return (
     <>
       <TodoNavbar />
-      <main className="py-10 h-screen space-y-5 overflow-y-auto">
-        <h1 className="font-bold text-3xl text-center">{username}'s todos</h1>
-        <div className="max-w-lg mx-auto bg-slate-100 round-md p-5 space-y-6">
-          <AddTodoForm onSubmit={handleToDoAdded} />
-          <TodoList todos={todos} onCompletedChange={setTodoCompleted} onDelete={deleteTodo} />
+      <main className="py-10 h-screen space-y-5 overflow-y-auto bg-[#008080]">
+        <div className="max-w-lg mx-auto bg-[#C0C0C0] round-md p-1 space-y-2 shadow-w95Container">
+          <div className="max-w-lg mx-auto bg-[#000080] text-white px-2 py-1">{username}'s todos</div>
+          <div className="max-w-lg mx-auto shadow-w95InnerContainer p-3">
+            <AddTodoForm onSubmit={handleToDoAdded} />
+          </div>
+          <div className="max-w-lg mx-auto shadow-w95InnerContainer p-3">
+            <TodoList todos={todos} onCompletedChange={setTodoCompleted} onDelete={deleteTodo} />
+          </div>
         </div>
         <TodoSummary todos={todos} deleteAllCompleted={deleteAllCompletedTodos} />
       </main>
