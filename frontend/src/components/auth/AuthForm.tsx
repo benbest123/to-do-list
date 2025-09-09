@@ -39,10 +39,10 @@ export default function AuthForm() {
   }
 
   return (
-    <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-      <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" className="rounded-md grow border bg-white border-gray-400 p-2" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="rounded-md grow border bg-white border-gray-400 p-2" />
-      <button type="submit" className="w-40 h-10 rounded-md bg-slate-900 text-white hover:bg-slate-800">
+    <form className="flex flex-col gap-2 bg-[#C0C0C0]" onSubmit={handleSubmit}>
+      <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" className="grow border bg-white border-gray-400 shadow-w95Input p-2" />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="grow border bg-white border-gray-400 shadow-w95Input p-2" />
+      <button type="submit" className="w-35 h-10 font-w95 bg-[#C0C0C0] text-black shadow-w95Button">
         Register or Login
       </button>
     </form>

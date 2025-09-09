@@ -17,9 +17,9 @@ export default function AddTodoForm({ onSubmit }: AddTodoFormProps) {
   }
 
   return (
-    <form className="flex" onSubmit={handleSubmit}>
-      <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="What needs to be done?" className="rounded-s-md grow border bg-white border-gray-400 p-2" />
-      <button type="submit" className="w-16 rounded-e-md bg-slate-900 text-white hover:bg-slate-800">
+    <form className="flex gap-2 bg-[#C0C0C0]" onSubmit={handleSubmit}>
+      <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="What needs to be done?" className="grow border bg-white border-gray-400 shadow-w95Input p-2" />
+      <button type="submit" className="w-20 h-10 font-w95 bg-[#C0C0C0] text-black shadow-w95Button">
         Add
       </button>
     </form>
