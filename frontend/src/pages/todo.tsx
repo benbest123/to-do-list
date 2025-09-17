@@ -6,7 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import useTodos from "../hooks/useTodos";
 
 function Todo() {
-  const { todos, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo } = useTodos();
+  const { todos, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo, reorderTodos } = useTodos();
   const { username } = useAuth();
 
   const handleToDoAdded = async (title: string) => {
@@ -22,7 +22,7 @@ function Todo() {
             <AddTodoForm onSubmit={handleToDoAdded} />
           </div>
           <div className="max-w-lg mx-auto shadow-w95InnerContainer p-3">
-            <TodoList todos={todos} onCompletedChange={setTodoCompleted} onDelete={deleteTodo} />
+            <TodoList todos={todos} onCompletedChange={setTodoCompleted} onDelete={deleteTodo} onReorder={reorderTodos} />
           </div>
         </div>
         <TodoSummary todos={todos} deleteAllCompleted={deleteAllCompletedTodos} />
