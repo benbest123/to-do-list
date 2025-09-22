@@ -14,9 +14,19 @@ db.exec(`
         title TEXT NOT NULL,
         completed INTEGER DEFAULT 0,
         user_id INTEGER NOT NULL,
+        order_index INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(id)
 
     )`);
+
+// Add order_index column if it doesn't exist (for existing databases)
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN order_index INTEGER DEFAULT 0`);
+  // Update existing todos to have proper order_index values
+  db.exec(`UPDATE todos SET order_index = id WHERE order_index = 0 OR order_index IS NULL`);
+} catch (err) {
+  // Column likely already exists, ignore error
+}
 
 // initialize users table
 db.exec(`

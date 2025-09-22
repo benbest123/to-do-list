@@ -104,6 +104,40 @@ export default function useTodos() {
     }
   }
 
+  async function reorderTodos(reorderedTodos: Todo[]) {
+    try {
+      // Optimistically update local state
+      setTodos(reorderedTodos);
+
+      // Send the updated order to the backend
+      const token = localStorage.getItem("token");
+      const orderUpdates = reorderedTodos.map((todo) => ({
+        id: todo.id,
+        order_index: todo.order_index,
+      }));
+
+      const response = await fetch(`${API_URL}/todos/reorder`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ todos: orderUpdates }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to reorder todos");
+      }
+
+      // Optionally refresh from server to ensure consistency
+      await fetchTodos();
+    } catch (err) {
+      console.error("Reorder error:", err);
+      // Refresh from server on error
+      await fetchTodos();
+    }
+  }
+
   return {
     todos,
     fetchTodos,
@@ -111,5 +145,6 @@ export default function useTodos() {
     setTodoCompleted,
     deleteAllCompletedTodos,
     deleteTodo,
+    reorderTodos,
   };
 }

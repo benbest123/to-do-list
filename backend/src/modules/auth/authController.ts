@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import db from "../database";
-import { User } from "../types/user";
+import db from "../../shared/database";
+import { User } from "../../shared/types/user";
 
 export const fetchUsers = (req: Request, res: Response) => {
   try {

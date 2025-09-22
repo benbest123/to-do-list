@@ -1,8 +1,9 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import { authRouter } from "./routes/authRouter";
-import { todoRouter } from "./routes/todoRouter";
+import { authRouter } from "./modules/auth/authRouter";
+import { todoRouter } from "./modules/todos/todoRouter";
+import { spotifyRouter } from "./modules/spotify/router";
 dotenv.config();
 
 export const createApp = () => {
@@ -13,8 +14,9 @@ export const createApp = () => {
   app.use(cors());
 
   //routing
-  app.use("/api/todos", todoRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/todos", todoRouter);
+  app.use("/api/spotify", spotifyRouter);
 
   return app;
 };
