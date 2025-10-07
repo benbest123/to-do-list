@@ -1,18 +1,20 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import { authRouter } from "./modules/auth/authRouter";
+import { spotifyRouter } from "./modules/spotify/spotifyRouter";
 import { todoRouter } from "./modules/todos/todoRouter";
-import { spotifyRouter } from "./modules/spotify/router";
-dotenv.config();
 
 export const createApp = () => {
   const app = express();
 
   //config
   app.use(express.json());
-  app.use(cors());
-
+  app.use(
+    cors({
+      origin: "http://127.0.0.1:5173",
+      credentials: true,
+    })
+  );
   //routing
   app.use("/api/auth", authRouter);
   app.use("/api/todos", todoRouter);
