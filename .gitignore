@@ -1,0 +1,27 @@
+# Local working files
+BACKLOG.md
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Build output
+dist/
+
+# Runtime files
+backend/database.sqlite
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
