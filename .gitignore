@@ -12,7 +12,7 @@ package-lock.json
 dist/
 
 # Runtime files
-backend/database.sqlite
+*.sqlite
 *.local
 
 # Editor directories and files
