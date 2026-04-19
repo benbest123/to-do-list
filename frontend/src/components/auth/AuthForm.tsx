@@ -26,7 +26,7 @@ export default function AuthForm() {
       if (response.ok) {
         login(authResponse.user.username, authResponse.token);
         console.log(authResponse.message);
-        navigate("/todos");
+        navigate("/desktop");
       } else {
         console.error(authResponse.error);
       }
