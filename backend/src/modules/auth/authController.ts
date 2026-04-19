@@ -4,16 +4,6 @@ import jwt from "jsonwebtoken";
 import db from "../../shared/database";
 import { User } from "../../shared/types/user";
 
-export const fetchUsers = (req: Request, res: Response) => {
-  try {
-    const users = db.prepare("SELECT * FROM users").all() as User[];
-    const usersNoPassword = users.map(({ password_hash, ...rest }) => rest) as Omit<User, "password_hash">[]; // dont want to return password hash
-    res.json(usersNoPassword);
-  } catch (err) {
-    res.status(500).json({ error: "failed to fetch users" });
-  }
-};
-
 export const authentication = (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
@@ -49,7 +39,9 @@ export const authentication = (req: Request, res: Response) => {
       }
 
       const hashedPassword = bcrypt.hashSync(password, 10);
-      const newUser = db.prepare("INSERT INTO users (username, password_hash) VALUES (?, ?) RETURNING *").get(username, hashedPassword) as User;
+      const newUser = db
+        .prepare("INSERT INTO users (username, password_hash) VALUES (?, ?) RETURNING *")
+        .get(username, hashedPassword) as User;
 
       user = newUser;
       isNewUser = true;
@@ -62,7 +54,7 @@ export const authentication = (req: Request, res: Response) => {
         username: user.username,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "24h" },
     );
 
     const userResponse = {
