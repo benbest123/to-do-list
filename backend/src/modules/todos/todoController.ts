@@ -82,6 +82,11 @@ export const reorderTodos = (req: Request, res: Response) => {
 
 export const toggleComplete = (req: Request, res: Response) => {
   try {
+    const userId = getUserFromToken(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const { id } = req.params;
 
     if (!id || isNaN(Number(id))) {
@@ -89,8 +94,8 @@ export const toggleComplete = (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid todo ID" });
     }
     const resultRow = db
-      .prepare("UPDATE todos SET completed = NOT completed WHERE id = ? RETURNING *")
-      .get(id) as TodoRow;
+      .prepare("UPDATE todos SET completed = NOT completed WHERE id = ? AND user_id = ? RETURNING *")
+      .get(id, userId) as TodoRow;
     const result = dbToTodo(resultRow);
 
     if (!result) {
@@ -105,7 +110,12 @@ export const toggleComplete = (req: Request, res: Response) => {
 
 export const deleteCompleted = (req: Request, res: Response) => {
   try {
-    const result = db.prepare("DELETE FROM todos where completed = 1").run();
+    const userId = getUserFromToken(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const result = db.prepare("DELETE FROM todos WHERE completed = 1 AND user_id = ?").run(userId);
 
     res.json({ deletedCount: result.changes });
   } catch (err) {
@@ -115,13 +125,18 @@ export const deleteCompleted = (req: Request, res: Response) => {
 
 export const deleteTodo = (req: Request, res: Response) => {
   try {
+    const userId = getUserFromToken(req);
+    if (!userId) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const { id } = req.params;
 
     if (!id || isNaN(Number(id))) {
       // this is to prevent possible sql injection
       return res.status(400).json({ error: "Invalid todo ID" });
     }
-    const result = db.prepare("DELETE FROM todos WHERE id = ?").run(id);
+    const result = db.prepare("DELETE FROM todos WHERE id = ? AND user_id = ?").run(id, userId);
 
     if (result.changes === 0) {
       return res.status(404).json({ error: "todo not found" });
