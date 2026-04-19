@@ -4,7 +4,7 @@ dotenv.config();
 
 import { createApp } from "./app";
 
-const PORT = 8000;
+const PORT = Number(process.env.PORT) ?? 8000;
 
 const app = createApp();
 
