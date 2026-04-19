@@ -11,9 +11,9 @@ export const createApp = () => {
   app.use(express.json());
   app.use(
     cors({
-      origin: "http://127.0.0.1:5173",
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
-    })
+    }),
   );
   //routing
   app.use("/api/auth", authRouter);
