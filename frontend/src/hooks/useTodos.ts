@@ -1,16 +1,18 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "./useAuth";
 import { Todo } from "../types/todo";
 import { API_URL } from "../utils/constants";
 
 export default function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const { token } = useAuth();
 
   useEffect(() => {
     fetchTodos();
   }, []);
 
   async function fetchTodos() {
-    const token = localStorage.getItem("token");
+    
 
     const response = await fetch(`${API_URL}/todos`, {
       method: "GET",
@@ -28,7 +30,7 @@ export default function useTodos() {
 
   async function addTodo(title: string) {
     try {
-      const token = localStorage.getItem("token");
+      
       const response = await fetch(`${API_URL}/todos`, {
         method: "POST",
         headers: {
@@ -43,7 +45,7 @@ export default function useTodos() {
       }
 
       const newTodo = await response.json();
-      setTodos((prev) => [...prev, newTodo]);
+      setTodos(prev => [...prev, newTodo]);
     } catch (err) {
       console.error("Error adding todo:", err);
       await fetchTodos();
@@ -52,9 +54,12 @@ export default function useTodos() {
 
   async function setTodoCompleted(id: number, checked: boolean) {
     try {
-      setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, completed: checked } : todo)));
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/todos/${id}/toggle`, { method: "PATCH", headers: { Authorization: `Bearer ${token}` } });
+      setTodos(prev => prev.map(todo => (todo.id === id ? { ...todo, completed: checked } : todo)));
+      
+      const response = await fetch(`${API_URL}/todos/${id}/toggle`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to update todo");
@@ -62,7 +67,7 @@ export default function useTodos() {
 
       // Ssync with server
       const updatedTodo = await response.json();
-      setTodos((prev) => prev.map((todo) => (todo.id === id ? updatedTodo : todo)));
+      setTodos(prev => prev.map(todo => (todo.id === id ? updatedTodo : todo)));
     } catch (err) {
       console.error("uupdate error:", err);
       await fetchTodos();
@@ -71,9 +76,12 @@ export default function useTodos() {
 
   async function deleteTodo(id: number) {
     try {
-      setTodos((prev) => prev.filter((todo: Todo) => todo.id !== id));
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/todos/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      setTodos(prev => prev.filter((todo: Todo) => todo.id !== id));
+      
+      const response = await fetch(`${API_URL}/todos/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete todo");
@@ -87,9 +95,12 @@ export default function useTodos() {
   async function deleteAllCompletedTodos() {
     try {
       //optimistic update
-      setTodos((prev) => prev.filter((todo: Todo) => !todo.completed));
-      const token = localStorage.getItem("token");
-      const response = await fetch(`${API_URL}/todos/delete-completed`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      setTodos(prev => prev.filter((todo: Todo) => !todo.completed));
+      
+      const response = await fetch(`${API_URL}/todos/delete-completed`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!response.ok) {
         throw new Error("Failed to delete todos");
@@ -110,8 +121,8 @@ export default function useTodos() {
       setTodos(reorderedTodos);
 
       // Send the updated order to the backend
-      const token = localStorage.getItem("token");
-      const orderUpdates = reorderedTodos.map((todo) => ({
+      
+      const orderUpdates = reorderedTodos.map(todo => ({
         id: todo.id,
         order_index: todo.order_index,
       }));
