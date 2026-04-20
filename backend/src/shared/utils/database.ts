@@ -7,8 +7,3 @@ export const dbToTodo = (row: TodoRow): Todo => ({
   ...row,
   completed: Boolean(row.completed),
 });
-
-export const todoToDb = (todo: Todo): TodoRow => ({
-  ...todo,
-  ...{ completed: todo.completed ? 1 : 0 },
-});

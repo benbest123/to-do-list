@@ -3,7 +3,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Auth from "./pages/Auth";
 import Desktop from "./pages/Desktop";
 import SpotifyAuth from "./pages/SpotifyAuth";
-import Todo from "./pages/todo";
+import Todo from "./pages/Todo";
 
 function App() {
   return (

@@ -10,6 +10,6 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "nodenext"
   },
-  "include": ["src/**/*", "../frontend/contexts"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }
