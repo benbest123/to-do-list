@@ -3,7 +3,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Auth from "./pages/Auth";
 import Desktop from "./pages/Desktop";
 import SpotifyAuth from "./pages/SpotifyAuth";
-import Todo from "./pages/todo";
+import Todo from "./pages/Todo";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
@@ -12,9 +13,30 @@ function App() {
         <Routes>
           <Route path='/' element={<Auth />} />
           <Route path='/auth' element={<Auth />} />
-          <Route path='/desktop' element={<Desktop />} />
-          <Route path='/todos' element={<Todo />} />
-          <Route path='/spotify' element={<SpotifyAuth />} />
+          <Route
+            path='/desktop'
+            element={
+              <ProtectedRoute>
+                <Desktop />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/todos'
+            element={
+              <ProtectedRoute>
+                <Todo />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='/spotify'
+            element={
+              <ProtectedRoute>
+                <SpotifyAuth />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

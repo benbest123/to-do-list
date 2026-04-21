@@ -2,15 +2,13 @@ import { Request, Response } from "express";
 import db from "../../shared/database";
 import { Todo } from "../../shared/types/todo";
 import { TodoRow } from "../../shared/types/todorow";
-import { getUserFromToken } from "../../shared/utils/authCheck";
 import { dbToTodo } from "../../shared/utils/database";
+import { checkUserId, checkTodoId } from "./utils/todoHelpers";
 
 export const fetchTodos = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
+
     const todoRows = db
       .prepare("SELECT * FROM todos WHERE user_id = ? ORDER BY order_index ASC")
       .all(userId) as TodoRow[];
@@ -23,10 +21,8 @@ export const fetchTodos = (req: Request, res: Response) => {
 
 export const addTodo = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
+
     const { title } = req.body;
 
     if (!title) {
@@ -52,10 +48,7 @@ export const addTodo = (req: Request, res: Response) => {
 
 export const reorderTodos = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
 
     const { todos } = req.body;
 
@@ -82,17 +75,12 @@ export const reorderTodos = (req: Request, res: Response) => {
 
 export const toggleComplete = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
 
     const { id } = req.params;
 
-    if (!id || isNaN(Number(id))) {
-      // this is to prevent possible sql injection
-      return res.status(400).json({ error: "Invalid todo ID" });
-    }
+    checkTodoId(id, res);
+
     const resultRow = db
       .prepare("UPDATE todos SET completed = NOT completed WHERE id = ? AND user_id = ? RETURNING *")
       .get(id, userId) as TodoRow;
@@ -110,10 +98,7 @@ export const toggleComplete = (req: Request, res: Response) => {
 
 export const deleteCompleted = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
 
     const result = db.prepare("DELETE FROM todos WHERE completed = 1 AND user_id = ?").run(userId);
 
@@ -125,17 +110,12 @@ export const deleteCompleted = (req: Request, res: Response) => {
 
 export const deleteTodo = (req: Request, res: Response) => {
   try {
-    const userId = getUserFromToken(req);
-    if (!userId) {
-      return res.status(401).json({ error: "Authentication required" });
-    }
+    const userId = checkUserId(req, res);
 
     const { id } = req.params;
 
-    if (!id || isNaN(Number(id))) {
-      // this is to prevent possible sql injection
-      return res.status(400).json({ error: "Invalid todo ID" });
-    }
+    checkTodoId(id, res);
+
     const result = db.prepare("DELETE FROM todos WHERE id = ? AND user_id = ?").run(id, userId);
 
     if (result.changes === 0) {
@@ -145,5 +125,31 @@ export const deleteTodo = (req: Request, res: Response) => {
     res.status(204).send();
   } catch (err) {
     res.status(500).json({ error: "failed to delete todo" });
+  }
+};
+
+export const editTodo = (req: Request, res: Response) => {
+  try {
+    const userId = checkUserId(req, res);
+
+    const { title } = req.body;
+
+    const { id } = req.params;
+
+    checkTodoId(id, res);
+
+    if (!title) {
+      return res.status(400).json("cannot submit an empty todo");
+    }
+
+    const result = db.prepare("UPDATE todos SET title = ? WHERE id = ? AND user_id = ?").run(title, id, userId);
+
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "todo not found" });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({ error: "failed to edit todo" });
   }
 };

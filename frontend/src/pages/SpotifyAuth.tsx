@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import SpotifyLoginButton from "../components/spotify/SpotifyLoginButton";
 import SpotifyTokenInfo from "../components/spotify/SpotifyTokenInfo";
 import SpotifyUserProfile from "../components/spotify/SpotifyUserProfile";
-
-const API_URL = "http://127.0.0.1:8000";
+import { API_URL } from "../utils/constants";
 
 export interface TokenData {
   access_token: string;
@@ -119,17 +118,17 @@ function SpotifyAuth() {
   };
 
   if (loading) {
-    return <div className="p-5">Loading...</div>;
+    return <div className='p-5'>Loading...</div>;
   }
 
   return (
-    <main className="p-5 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Spotify Auth Demo</h1>
+    <main className='p-5 max-w-2xl mx-auto'>
+      <h1 className='text-3xl font-bold mb-6'>Spotify Auth Demo</h1>
 
       {!token ? (
         <SpotifyLoginButton onLogin={handleLogin} />
       ) : (
-        <div className="space-y-5">
+        <div className='space-y-5'>
           <SpotifyUserProfile userData={userData} />
           <SpotifyTokenInfo token={token} onRefresh={handleRefreshToken} onLogout={handleLogout} />
         </div>

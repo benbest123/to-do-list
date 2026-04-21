@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { Request, Response } from "express";
+import TTLMap from "../../shared/utils/ttlMap";
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!;
@@ -10,8 +11,10 @@ const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 const SCOPE = "user-read-private user-read-email";
 
+const TTL_STORE_MS = 5 * 60 * 1000;
+
 // Store code verifiers temporarily (in production, use Redis or similar)
-const codeVerifiers = new Map<string, string>();
+const codeVerifiers = new TTLMap(TTL_STORE_MS);
 
 // Generate PKCE challenge
 function generateCodeChallenge(verifier: string): string {
