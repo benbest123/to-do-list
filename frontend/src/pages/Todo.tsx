@@ -7,7 +7,7 @@ import { useAuth } from "../hooks/useAuth";
 import useTodos from "../hooks/useTodos";
 
 function Todo() {
-  const { todos, error, clearError, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo, reorderTodos } =
+  const { todos, error, clearError, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo, reorderTodos, editTodo } =
     useTodos();
   const { username } = useAuth();
 
@@ -24,6 +24,7 @@ function Todo() {
               todos={todos}
               onCompletedChange={setTodoCompleted}
               onDelete={deleteTodo}
+              onEdit={editTodo}
               onReorder={reorderTodos}
             />
           </div>
