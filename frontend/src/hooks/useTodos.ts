@@ -151,6 +151,29 @@ export default function useTodos() {
     }
   }
 
+  async function editTodo(id: number, title: string) {
+    try {
+      setTodos(prev => prev.map(todo => (todo.id === id ? { ...todo, title } : todo)));
+
+      const response = await fetch(`${API_URL}/todos/${id}/edit`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to edit todo");
+      }
+    } catch (err) {
+      console.error("[useTodos] editTodo failed:", err);
+      setError("Failed to edit todo. Please try again.");
+      fetchTodos();
+    }
+  }
+
   function clearError() {
     setError(null);
   }
@@ -165,5 +188,6 @@ export default function useTodos() {
     deleteAllCompletedTodos,
     deleteTodo,
     reorderTodos,
+    editTodo,
   };
 }
