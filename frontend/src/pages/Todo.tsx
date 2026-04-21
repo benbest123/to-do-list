@@ -1,4 +1,5 @@
 import Taskbar from "../components/shared/Taskbar";
+import ErrorDialog from "../components/shared/ErrorDialog";
 import AddTodoForm from "../components/todo/AddTodoForm";
 import TodoList from "../components/todo/TodoList";
 import TodoSummary from "../components/todo/TodoSummary";
@@ -6,7 +7,8 @@ import { useAuth } from "../hooks/useAuth";
 import useTodos from "../hooks/useTodos";
 
 function Todo() {
-  const { todos, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo, reorderTodos } = useTodos();
+  const { todos, error, clearError, addTodo, setTodoCompleted, deleteAllCompletedTodos, deleteTodo, reorderTodos } =
+    useTodos();
   const { username } = useAuth();
 
   return (
@@ -29,6 +31,7 @@ function Todo() {
         <TodoSummary todos={todos} deleteAllCompleted={deleteAllCompletedTodos} />
       </main>
       <Taskbar />
+      {error && <ErrorDialog message={error} onClose={clearError} />}
     </div>
   );
 }

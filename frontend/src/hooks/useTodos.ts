@@ -5,6 +5,7 @@ import { API_URL } from "../utils/constants";
 
 export default function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -12,8 +13,6 @@ export default function useTodos() {
   }, []);
 
   async function fetchTodos() {
-    
-
     const response = await fetch(`${API_URL}/todos`, {
       method: "GET",
       headers: {
@@ -30,7 +29,6 @@ export default function useTodos() {
 
   async function addTodo(title: string) {
     try {
-      
       const response = await fetch(`${API_URL}/todos`, {
         method: "POST",
         headers: {
@@ -47,15 +45,16 @@ export default function useTodos() {
       const newTodo = await response.json();
       setTodos(prev => [...prev, newTodo]);
     } catch (err) {
-      console.error("Error adding todo:", err);
-      await fetchTodos();
+      console.error("[useTodos] addTodo failed:", err);
+      setError("Failed to add todo. Please try again.");
+      fetchTodos();
     }
   }
 
   async function setTodoCompleted(id: number, checked: boolean) {
     try {
       setTodos(prev => prev.map(todo => (todo.id === id ? { ...todo, completed: checked } : todo)));
-      
+
       const response = await fetch(`${API_URL}/todos/${id}/toggle`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
@@ -69,15 +68,16 @@ export default function useTodos() {
       const updatedTodo = await response.json();
       setTodos(prev => prev.map(todo => (todo.id === id ? updatedTodo : todo)));
     } catch (err) {
-      console.error("uupdate error:", err);
-      await fetchTodos();
+      console.error("[useTodos] setTodoCompleted failed:", err);
+      setError("Failed to update todo. Please try again.");
+      fetchTodos();
     }
   }
 
   async function deleteTodo(id: number) {
     try {
       setTodos(prev => prev.filter((todo: Todo) => todo.id !== id));
-      
+
       const response = await fetch(`${API_URL}/todos/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -87,8 +87,9 @@ export default function useTodos() {
         throw new Error("Failed to delete todo");
       }
     } catch (err) {
-      console.error("Delete error:", err);
-      await fetchTodos();
+      console.error("[useTodos] deleteTodo failed:", err);
+      setError("Failed to delete todo. Please try again.");
+      fetchTodos();
     }
   }
 
@@ -96,7 +97,7 @@ export default function useTodos() {
     try {
       //optimistic update
       setTodos(prev => prev.filter((todo: Todo) => !todo.completed));
-      
+
       const response = await fetch(`${API_URL}/todos/delete-completed`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
@@ -110,8 +111,9 @@ export default function useTodos() {
       const { deletedCount } = await response.json();
       console.log(`Deleted ${deletedCount} todos`);
     } catch (err) {
-      console.error("Delete error:", err);
-      await fetchTodos();
+      console.error("[useTodos] deleteAllCompletedTodos failed:", err);
+      setError("Failed to delete completed todos. Please try again.");
+      fetchTodos();
     }
   }
 
@@ -121,7 +123,7 @@ export default function useTodos() {
       setTodos(reorderedTodos);
 
       // Send the updated order to the backend
-      
+
       const orderUpdates = reorderedTodos.map(todo => ({
         id: todo.id,
         order_index: todo.order_index,
@@ -143,14 +145,20 @@ export default function useTodos() {
       // Optionally refresh from server to ensure consistency
       await fetchTodos();
     } catch (err) {
-      console.error("Reorder error:", err);
-      // Refresh from server on error
-      await fetchTodos();
+      console.error("[useTodos] reorderTodos failed:", err);
+      setError("Failed to reorder todos. Please try again.");
+      fetchTodos();
     }
+  }
+
+  function clearError() {
+    setError(null);
   }
 
   return {
     todos,
+    error,
+    clearError,
     fetchTodos,
     addTodo,
     setTodoCompleted,
