@@ -9,7 +9,7 @@ const FRONTEND_URI = `${process.env.FRONTEND_URI}/spotify`;
 
 const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
 const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
-const SCOPE = "user-read-private user-read-email";
+const SCOPE = "user-read-private user-read-email user-top-read";
 
 const TTL_STORE_MS = 5 * 60 * 1000;
 
@@ -128,6 +128,37 @@ export const spotifyRefreshToken = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error refreshing token:", error);
     res.status(500).json({ error: "Failed to refresh token" });
+  }
+};
+
+// Route: Get user's top artists or tracks (proxy)
+export const spotifyTopItems = async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const type = req.params.type; // "artists" or "tracks"
+  const { limit = "10", time_range = "medium_term" } = req.query;
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "No authorization header" });
+  }
+
+  if (type !== "artists" && type !== "tracks") {
+    return res.status(400).json({ error: "type must be artists or tracks" });
+  }
+
+  try {
+    const url = new URL(`https://api.spotify.com/v1/me/top/${type}`);
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("time_range", String(time_range));
+
+    const response = await fetch(url.toString(), {
+      headers: { Authorization: authHeader },
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching top items:", error);
+    res.status(500).json({ error: "Failed to fetch top items" });
   }
 };
 

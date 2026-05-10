@@ -4,9 +4,9 @@ interface SpotifyLoginButtonProps {
 
 function SpotifyLoginButton({ onLogin }: SpotifyLoginButtonProps) {
   return (
-    <div>
-      <p className="mb-4 text-gray-700">You are not logged in.</p>
-      <button onClick={onLogin} className="px-5 py-2.5 text-base bg-green-500 text-white rounded hover:bg-green-600 transition">
+    <div className='p-4'>
+      <p className='mb-4 text-sm'>You are not connected to Spotify.</p>
+      <button onClick={onLogin} className='px-4 py-1 bg-[#C0C0C0] text-black text-sm shadow-w95Button'>
         Login with Spotify
       </button>
     </div>
