@@ -6,6 +6,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [username, setUsername] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -14,6 +15,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(storedToken);
       setUsername(storedUsername);
     }
+    setIsInitialized(true);
   }, []);
 
   const login = (username: string, token: string) => {
@@ -38,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         isAuthenticated: !!token,
+        isInitialized,
       }}
     >
       {children}
