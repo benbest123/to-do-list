@@ -6,7 +6,11 @@ export const getUserFromToken = (req: Request): number | null => {
   if (!token) return null;
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number; type?: string };
+
+    // Reject refresh tokens being used as access tokens
+    if (decoded.type && decoded.type !== "access") return null;
+
     return decoded.userId;
   } catch {
     return null;

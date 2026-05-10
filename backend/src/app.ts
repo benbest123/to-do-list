@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import { authRouter } from "./modules/auth/authRouter";
@@ -9,6 +10,7 @@ export const createApp = () => {
 
   //config
   app.use(express.json());
+  app.use(cookieParser());
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
