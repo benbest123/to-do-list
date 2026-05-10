@@ -83,13 +83,13 @@ export const toggleComplete = (req: Request, res: Response) => {
 
     const resultRow = db
       .prepare("UPDATE todos SET completed = NOT completed WHERE id = ? AND user_id = ? RETURNING *")
-      .get(id, userId) as TodoRow;
-    const result = dbToTodo(resultRow);
+      .get(id, userId) as TodoRow | undefined;
 
-    if (!result) {
+    if (!resultRow) {
       return res.status(404).json({ error: "todo not found" });
     }
 
+    const result = dbToTodo(resultRow);
     res.json({ ...result, completed: Boolean(result.completed) });
   } catch (err) {
     res.status(500).json({ error: "failed to update todo" });
