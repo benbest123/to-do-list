@@ -203,3 +203,9 @@ All endpoints are prefixed with `/api`.
 ## License
 
 MIT
+
+---
+
+## Acknowledgements
+
+- [**MishaKav/jest-coverage-comment**](https://github.com/MishaKav/jest-coverage-comment) — GitHub Action used to post Jest coverage reports as PR comments. Thanks to Misha Kav for maintaining this.
