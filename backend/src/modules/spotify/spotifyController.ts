@@ -12,9 +12,11 @@ const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
 const SCOPE = "user-read-private user-read-email user-top-read";
 
 const TTL_STORE_MS = 5 * 60 * 1000;
+const TTL_CACHE_MS = 15 * 60 * 1000;
 
 // Store code verifiers temporarily (in production, use Redis or similar)
-const codeVerifiers = new TTLMap(TTL_STORE_MS);
+const codeVerifiers = new TTLMap<string>(TTL_STORE_MS);
+const topItemsCache = new TTLMap<unknown>(TTL_CACHE_MS);
 
 // Generate PKCE challenge
 function generateCodeChallenge(verifier: string): string {
@@ -150,11 +152,18 @@ export const spotifyTopItems = async (req: Request, res: Response) => {
     url.searchParams.set("limit", String(limit));
     url.searchParams.set("time_range", String(time_range));
 
+    const cacheKey = `${authHeader}:${type}:${time_range}`;
+    const cached = topItemsCache.get(cacheKey);
+    if (cached !== undefined) {
+      return res.json(cached);
+    }
+
     const response = await fetch(url.toString(), {
       headers: { Authorization: authHeader },
     });
 
     const data = await response.json();
+    topItemsCache.set(cacheKey, data);
     res.json(data);
   } catch (error) {
     console.error("Error fetching top items:", error);

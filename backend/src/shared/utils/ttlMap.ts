@@ -1,18 +1,18 @@
-// TTL (time-to-live) map for storing codeVerifier during PKCE handshake
-// Prevents memory leaks and prevents break on restart (use instead of regular Map)
-export default class TTLMap {
-  private store = new Map<string, { value: string; expiresAt: number }>();
+// TTL (time-to-live) map for storing short-lived values with automatic expiry.
+// Generic so it can hold any value type without serialisation overhead.
+export default class TTLMap<T = string> {
+  private store = new Map<string, { value: T; expiresAt: number }>();
   private ttlMs: number;
 
   constructor(ttlMs: number) {
     this.ttlMs = ttlMs; // time to live in ms
   }
 
-  set(key: string, value: string) {
+  set(key: string, value: T) {
     this.store.set(key, { value, expiresAt: Date.now() + this.ttlMs });
   }
 
-  get(key: string) {
+  get(key: string): T | undefined {
     const entry = this.store.get(key);
     if (!entry) return undefined;
 
